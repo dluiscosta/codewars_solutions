@@ -1,7 +1,9 @@
 import re
+from abc import ABC
 
 
-class BinomialExpander:
+class BinomialExpander(ABC):
+    """Wrapper for the method 'expand' and it's utilities"""
 
     _EXPR_REGEX = re.compile(
         r"\((?P<a>\-?[0-9]*)(?P<x>[a-z])\+?(?P<b>\-?[0-9]+)\)\^(?P<n>[0-9]+)"
