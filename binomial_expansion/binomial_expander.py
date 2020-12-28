@@ -10,8 +10,11 @@ class BinomialExpander:
 
     _memorized_pascals_triangle_rows = [[1]]
 
+    # O(len(expr)) time and space
     @classmethod
-    def _extract_variables(cls, expr):
+    def _extract_variables(cls, expr: str) -> tuple:
+        """Extract the variables a, b, x and n from a mathematical expression
+        of the form (ax+b)^n"""
         match = re.fullmatch(cls._EXPR_REGEX, expr)
         if not match:
             raise ValueError('Invalid expression {}.'.format(expr))
@@ -21,8 +24,10 @@ class BinomialExpander:
             int(match.group('b')), match.group('x'), int(match.group('n'))
         )
 
+    # O(n) time and space
     @classmethod
-    def _get_pascals_triangle_row(cls, n):
+    def _get_pascals_triangle_row(cls, n: int) -> list:
+        """Get the nth row of the Pascal's triangle, starting from 0"""
         if n < len(cls._memorized_pascals_triangle_rows):
             return cls._memorized_pascals_triangle_rows[n]
         else:
@@ -31,8 +36,10 @@ class BinomialExpander:
             cls._memorized_pascals_triangle_rows.append(row)
             return row
 
+    # O(n) time and space
     @staticmethod
-    def _build_polinomial(a, b, x, n, coeffs):
+    def _build_polynomial(a: int, b: int, x: str, n: int, coeffs: list) -> str:
+        """Build a polynomial that equals (ax+b)^n"""
         terms = []
         for i, coeff in enumerate(coeffs):
             coeff_ = coeff*a**(n-i)*b**i
@@ -44,11 +51,31 @@ class BinomialExpander:
         return ''.join(['+' + term if term[0] != '-' and i != 0 else term
                         for i, term in enumerate(terms)])
 
+    # O(len(expr) + n) time and space
     @classmethod
-    def expand(cls, expr):
+    def expand(cls, expr: str) -> str:
+        """
+        Expand a mathematical expression of the form (ax+b)^n.
+
+        Expand a power of a binomial, a mathematical expression of the form
+        (ax+b)ˆn where 'n' is a natural number, into a polynomial, a sum
+        involving terms of the form cxˆd. This method only supports 'a' and 'b'
+        integers and 'x' as a lower case 1-letter variable name.
+
+        Parameters
+        ----------
+        expr : str
+            Expression of the form (ax+b)^n.
+
+        Returns
+        -------
+        str
+            The expanded expression, a polynomial.
+
+        """
         a, b, x, n = cls._extract_variables(expr)
         coeffs = cls._get_pascals_triangle_row(n)
-        return cls._build_polinomial(a, b, x, n, coeffs)
+        return cls._build_polynomial(a, b, x, n, coeffs)
 
 
 expand = BinomialExpander.expand  # for Codewars
