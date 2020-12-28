@@ -46,3 +46,6 @@ class BinomialExpander:
         a, b, x, n = cls._extract_variables(expr)
         coeffs = cls._get_pascals_triangle_row(n)
         return cls._build_polinomial(a, b, x, n, coeffs)
+
+
+expand = BinomialExpander.expand  # for Codewars
