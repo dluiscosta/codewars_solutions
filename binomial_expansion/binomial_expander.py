@@ -6,6 +6,8 @@ class BinomialExpander:
     _EXPR_REGEX = re.compile(
         r"\((?P<a>\-?[0-9]*)(?P<x>[a-z])\+?(?P<b>\-?[0-9]+)\)\^(?P<n>[0-9]+)"
     )
+    _A_EXCEPTIONS = {'': 1, '-': -1}
+
     _memorized_pascals_triangle_rows = [[1]]
 
     @classmethod
@@ -13,8 +15,9 @@ class BinomialExpander:
         match = re.fullmatch(cls._EXPR_REGEX, expr)
         if not match:
             raise ValueError('Invalid expression {}.'.format(expr))
+        a = match.group('a')
         return (
-            int(match.group('a')) if match.group('a') else 1,
+            int(a) if a not in cls._A_EXCEPTIONS else cls._A_EXCEPTIONS[a],
             int(match.group('b')), match.group('x'), int(match.group('n'))
         )
 
