@@ -37,9 +37,10 @@ class BinomialExpander:
             return row
 
     # O(n) time and space
-    @staticmethod
-    def _build_polynomial(a: int, b: int, x: str, n: int, coeffs: list) -> str:
+    @classmethod
+    def _build_polynomial(cls, a: int, b: int, x: str, n: int) -> str:
         """Build a polynomial that equals (ax+b)^n"""
+        coeffs = cls._get_pascals_triangle_row(n)
         terms = []
         for i, coeff in enumerate(coeffs):
             coeff_ = coeff*a**(n-i)*b**i
@@ -74,8 +75,7 @@ class BinomialExpander:
 
         """
         a, b, x, n = cls._extract_variables(expr)
-        coeffs = cls._get_pascals_triangle_row(n)
-        return cls._build_polynomial(a, b, x, n, coeffs)
+        return cls._build_polynomial(a, b, x, n)
 
 
 expand = BinomialExpander.expand  # for Codewars
