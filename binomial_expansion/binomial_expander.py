@@ -3,13 +3,13 @@ import re
 
 class BinomialExpander:
 
-    EXPR_REGEX = re.compile(
+    _EXPR_REGEX = re.compile(
         r"\((?P<a>\-?[0-9]*)(?P<x>[a-z])\+?(?P<b>\-?[0-9]+)\)\^(?P<n>[0-9]+)"
     )
 
     @classmethod
     def _extract_variables(cls, expr):
-        match = re.fullmatch(cls.EXPR_REGEX, expr)
+        match = re.fullmatch(cls._EXPR_REGEX, expr)
         if not match:
             raise ValueError('Invalid expression {}.'.format(expr))
         return (
