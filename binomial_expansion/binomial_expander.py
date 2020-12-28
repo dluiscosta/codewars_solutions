@@ -29,11 +29,20 @@ class BinomialExpander:
             return row
 
     @staticmethod
-    def _build_polinomial(a, b, x, coeffs):
-        raise NotImplementedError()
+    def _build_polinomial(a, b, x, n, coeffs):
+        terms = []
+        for i, coeff in enumerate(coeffs):
+            coeff_ = coeff*a**(n-i)*b**i
+            if coeff_ != 0:
+                terms.append('{}{}'.format(
+                    str(coeff_) if coeff_ not in [1, -1] else str(coeff_)[:-1],
+                    x + '^' + str(n-i) if n-i > 1 else ('', x)[n-i]
+                ) if not (coeff_ in [1, -1] and n-i == 0) else str(coeff_))
+        return ''.join(['+' + term if term[0] != '-' and i != 0 else term
+                        for i, term in enumerate(terms)])
 
     @classmethod
     def expand(cls, expr):
         a, b, x, n = cls._extract_variables(expr)
         coeffs = cls._get_pascals_triangle_row(n)
-        return cls._build_polinomial(a, b, x, coeffs)
+        return cls._build_polinomial(a, b, x, n, coeffs)
