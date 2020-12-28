@@ -12,6 +12,10 @@ VALID_TEST_CASES = {
         'variables': (1, 1, 'x', 2),
         'expanded': 'x^2+2x+1'
     },
+    '(-x+1)^2': {
+        'variables': (-1, 1, 'x', 2),
+        'expanded': 'x^2-2x+1'
+    },
     '(7x-7)^0': {
         'variables': (7, -7, 'x', 0),
         'expanded': '1'
