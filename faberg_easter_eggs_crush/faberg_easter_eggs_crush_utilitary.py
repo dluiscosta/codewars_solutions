@@ -55,3 +55,7 @@ class FabergEasterEggsCrushUtilitary(ABC):
                     [msh[eggs_-1][tries__] + 1 for tries__ in range(tries_)]
                 )
         return msh[eggs][tries]
+
+
+height = FabergEasterEggsCrushUtilitary.\
+    max_skyscrapper_height_with_determinable_target_floor  # for Codewars
