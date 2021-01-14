@@ -50,10 +50,10 @@ class FabergEasterEggsCrushUtilitary(ABC):
         #  dynamic programming table where msh(0,x) = msh(x,0) = 0
         msh = [[0]*(tries+1)] + [[0]+[None]*tries for i in range(eggs)]
         for eggs_ in range(1, eggs+1):
+            acc = 0
             for tries_ in range(1, tries+1):
-                msh[eggs_][tries_] = sum(
-                    [msh[eggs_-1][tries__] + 1 for tries__ in range(tries_)]
-                )
+                msh[eggs_][tries_] = tries_ + acc
+                acc += msh[eggs_-1][tries_]
         return msh[eggs][tries]
 
 
