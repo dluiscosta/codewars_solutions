@@ -129,8 +129,10 @@ MAX_SKYSCRAPPER_HEIGHT_WITH_DETERMINABLE_TARGET_FLOOR_TEST_CASES = [
 
 @pytest.mark.timeout(12)
 @pytest.mark.parametrize(
-    'eggs, tries, expected_return',
-    MAX_SKYSCRAPPER_HEIGHT_WITH_DETERMINABLE_TARGET_FLOOR_TEST_CASES
+    'eggs, tries, expected_return', [
+        pytest.param(eg, t, exp, id='{}, {}'.format(eg, t)) for eg, t, exp in
+        MAX_SKYSCRAPPER_HEIGHT_WITH_DETERMINABLE_TARGET_FLOOR_TEST_CASES
+    ]
 )
 def test_max_skyscrapper_height_with_determinable_target_floor(
         eggs, tries, expected_return):
