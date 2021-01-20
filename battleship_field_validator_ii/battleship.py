@@ -45,6 +45,8 @@ class Battleship(ABC):
             field: 10x10 list of lists containing integers, where 1 represents
                    a "ship cell" and 0 represents water.
         """
+        if sum([sum(line) for line in field]) != 20:
+            return False
         raise NotImplementedError
 
 
