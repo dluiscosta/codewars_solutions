@@ -2,6 +2,7 @@ import pytest
 from battleship import Battleship
 
 
+@pytest.mark.timeout(1)
 def test__extract_possible_ships():
     field = \
         [[1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -88,6 +89,7 @@ INVALID_FIELDS = [
 ]
 
 
+@pytest.mark.timeout(10)
 @pytest.mark.parametrize('field, expected_return, test_title', [
     pytest.param(field, expected_return, test_title, id=test_title)
     for test_title, field, expected_return in
