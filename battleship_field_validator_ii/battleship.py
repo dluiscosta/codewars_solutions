@@ -20,6 +20,7 @@ from abc import ABC
 from typing import List, Tuple
 from enum import Enum, auto
 import numpy as np
+from itertools import combinations, groupby, product
 
 
 class Battleship(ABC):
@@ -130,10 +131,39 @@ class Battleship(ABC):
             field: 10x10 list of lists containing integers, where 1 represents
                    a "ship cell" and 0 represents water.
         """
-        if sum([sum(line) for line in field]) != 20:
+        VALID_AMOUNT_OF_SHIPS = {1: 4, 2: 3, 3: 2, 4: 1}  # by length
+        if sum([sum(line) for line in field]) != \
+                sum([n*length for length, n in VALID_AMOUNT_OF_SHIPS.items()]):
             return False
         possible_ships = cls._extract_possible_ships(field)
-        print('\n'.join([str(ship) for ship in possible_ships]))
+        # print('\n'.join([str(ship) for ship in possible_ships]))
+        length_grouped_possible_ships = {
+            length: set(ships)
+            for length, ships in groupby(
+                sorted(list(possible_ships), key=lambda ship: ship.length),
+                lambda ship: ship.length
+            )
+        }
+        # print('\n'+'\n'.join(
+        #     [f"Length {length}\n"+'\n'.join([str(ship) for ship in group])+'\n'
+        #      for length, group in length_grouped_possible_ships.items()])
+        # )
+        for length, amount in VALID_AMOUNT_OF_SHIPS.items():
+            if len(length_grouped_possible_ships[length]) < amount:
+                return False
+        len_group_poss_ship_combinations = {
+            length: combinations(group, VALID_AMOUNT_OF_SHIPS[length])
+            for length, group in length_grouped_possible_ships.items()
+        }
+        # print('\n'.join(
+        #     [f'{len(list(cs))} combinations with length {length}'
+        #      for length, cs in len_group_poss_ship_combinations.items()]
+        # ))
+        possible_ship_combinations = product(
+            *[combinations for _, combinations in
+              len_group_poss_ship_combinations.items()]
+        )
+        print(len(list(possible_ship_combinations)))
         raise NotImplementedError
 
 
