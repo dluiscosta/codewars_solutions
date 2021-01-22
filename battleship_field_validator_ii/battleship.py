@@ -17,7 +17,9 @@ Description:
 """
 
 from abc import ABC
-from typing import List
+from typing import List, Tuple
+from enum import Enum, auto
+import numpy as np
 
 
 class Battleship(ABC):
@@ -30,8 +32,91 @@ class Battleship(ABC):
     on the opposing field. Each ship occupies one or more cells in the grid.
     """
 
-    @staticmethod
-    def validate_field(field: List[List[int]]) -> bool:
+    MAX_SHIP_SIZE = 4
+
+    class Ship:
+        class Orientation(Enum):
+            VERTICAL = auto()
+            HORIZONTAL = auto()
+
+        ORIENTATION_TRANSPOSE_DICT = {
+            'HORIZONTAL': Orientation.VERTICAL,
+            'VERTICAL': Orientation.HORIZONTAL,
+        }
+
+        def __init__(self, starting_pos: Tuple[int, int], length: int,
+                     orientation: Orientation = None):
+            if not orientation and length > 1:
+                raise ValueError()
+            self.starting_pos = starting_pos
+            self.orientation = orientation
+            self.length = length
+
+        def transpose(self):
+            self.starting_pos = self.starting_pos[::-1]
+            if self.orientation:
+                self.orientation = \
+                    self.ORIENTATION_TRANSPOSE_DICT[self.orientation.name]
+            return self
+
+        def __repr__(self):
+            w = self.orientation.name.lower() if self.orientation else '1-wide'
+            return '{} ship starting at {} with length {}'.format(
+                w, self.starting_pos, self.length
+            )
+
+        def __eq__(self, other):
+            if isinstance(other, type(self)):
+                return self.starting_pos == other.starting_pos and \
+                       self.orientation == other.orientation and \
+                       self.length == other.length
+
+        def __hash__(self):
+            return hash((self.starting_pos, self.orientation, self.length))
+
+    @classmethod
+    def _extract_possible_ships(cls, field: List[List[int]]) -> List[Ship]:
+
+        def extract_possible_horizontal_ships(field: np.array):
+            possible_horizontal_ships = []
+            # compute consecutive ship cells at the cell and to it's right
+            cons_ship_cells = np.zeros((10, 10), dtype=int)
+            for y in range(10):
+                acc_cons_ship_cells = 0
+                for x in range(9, -1, -1):
+                    if field[y][x] == 1:
+                        acc_cons_ship_cells += 1
+                        cons_ship_cells[y][x] = acc_cons_ship_cells
+                    else:
+                        acc_cons_ship_cells = 0
+            for y, x in np.argwhere(cons_ship_cells > 0):
+                possible_horizontal_ships.extend(
+                    [cls.Ship(
+                        (y, x), length,
+                        cls.Ship.Orientation.HORIZONTAL if length > 1 else None
+                     )
+                     for length in
+                     range(1, min(cons_ship_cells[y][x], cls.MAX_SHIP_SIZE)+1)]
+                )
+            return set(possible_horizontal_ships)
+
+        def flip_ship_orientation(ship):
+            flip_dict = {
+                'HORIZONTAL': cls.Ship.Orientation.VERTICAL,
+                'VERTICAL': cls.Ship.Orientation.HORIZONTAL,
+            }
+            if ship.orientation:
+                ship.orientation = flip_dict[ship.orientation.name]
+                ship.starting_position = ship.starting_position[::-1]
+            return ship
+
+        np_field = np.array(field)
+        return extract_possible_horizontal_ships(np_field).union(
+            {ship.transpose() for ship in
+             extract_possible_horizontal_ships(np.transpose(np_field))})
+
+    @classmethod
+    def validate_field(cls, field: List[List[int]]) -> bool:
         """
         Validate the disposition of ships in a given field.
 
@@ -47,6 +132,8 @@ class Battleship(ABC):
         """
         if sum([sum(line) for line in field]) != 20:
             return False
+        possible_ships = cls._extract_possible_ships(field)
+        print('\n'.join([str(ship) for ship in possible_ships]))
         raise NotImplementedError
 
 

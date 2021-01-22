@@ -2,6 +2,31 @@ import pytest
 from battleship import Battleship
 
 
+def test__extract_possible_ships():
+    field = \
+        [[1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    expected_possible_ships = {
+        Battleship.Ship((0, 0), 1),
+        Battleship.Ship((0, 0), 2, Battleship.Ship.Orientation.HORIZONTAL),
+        Battleship.Ship((0, 0), 3, Battleship.Ship.Orientation.HORIZONTAL),
+        Battleship.Ship((0, 1), 1),
+        Battleship.Ship((0, 1), 2, Battleship.Ship.Orientation.HORIZONTAL),
+        Battleship.Ship((0, 2), 1),
+        Battleship.Ship((1, 0), 1),
+        Battleship.Ship((0, 0), 2, Battleship.Ship.Orientation.VERTICAL),
+    }
+    assert Battleship._extract_possible_ships(field) == expected_possible_ships
+
+
 VALID_FIELDS = [
     ('valid field',
         [[1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
