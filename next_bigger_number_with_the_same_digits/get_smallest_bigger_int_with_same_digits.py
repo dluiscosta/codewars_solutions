@@ -16,12 +16,11 @@ def get_smallest_bigger_int_with_same_digits(int_: int) -> int:
             current_biggest_digit = digit
         else:  # found a break, one of the digits to be swapped
             idx = len(digits) - backwards_idx - 1
-            # look for the leftmost smallest digit bigger than the break digit,
+            # look for the smallest digit bigger than the break digit
             # inside the monotonically increasing sequence
             replacement_idx, replacement = min(
                 [(i, d) for i, d in enumerate(digits[idx+1:], start=idx+1)
-                 if d > digit],
-                key=(lambda i_d: i_d[1]*len(digits) + i_d[0])
+                 if d > digit], key=(lambda i_d: i_d[1])
             )
             # swap both digits, ensuring the resulting integer is bigger
             digits[idx], digits[replacement_idx] = replacement, digit  # swap
