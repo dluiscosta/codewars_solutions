@@ -9,6 +9,16 @@ Description:
 
 # O(log(int_)*loglog(int_)) time and O(log(int_)) space
 def get_smallest_bigger_int_with_same_digits(int_: int) -> int:
+    """
+    Given a positive integer, get the smallest integer which is bigger than it
+    and has the same digits.
+
+    Returns
+    -------
+    _ : int
+        The said integer, or -1 if there isn't one (the given integer is the
+        maximum of the set of integers composed by it's digits).
+    """
     digits = [int(digit) for digit in str(int_)]
     # look for a break in a monotonically increasing sequence, right to left
     current_biggest_digit = 0
