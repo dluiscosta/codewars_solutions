@@ -9,3 +9,6 @@ Description:
 
 def get_smallest_bigger_int_with_same_digits(int_: int) -> int:
     raise NotImplementedError
+
+
+next_bigger = get_smallest_bigger_int_with_same_digits  # for Codewars
