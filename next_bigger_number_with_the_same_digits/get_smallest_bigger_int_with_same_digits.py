@@ -23,7 +23,11 @@ def get_smallest_bigger_int_with_same_digits(int_: int) -> int:
                  if d > digit],
                 key=(lambda i_d: i_d[1]*len(digits) + i_d[0])
             )
+            # swap both digits, ensuring the resulting integer is bigger
             digits[idx], digits[replacement_idx] = replacement, digit  # swap
+            # sort the monotonically increasing sequence, getting the lowest
+            # integer value possible for that section
+            digits[idx+1:] = sorted(digits[idx+1:])
             return int(''.join((str(d) for d in digits)))  # list->int convers.
     return -1
 
