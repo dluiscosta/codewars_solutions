@@ -25,12 +25,54 @@ Description:
           of the piece at its correct position.
 """
 
+from typing import Tuple
+from enum import Enum, auto
+
 
 class PuzzleAssembler:
 
+    class Border(Enum):
+        LEFT = auto()
+        RIGHT = auto()
+        LOWER = auto()
+        UPPER = auto()
+
+    Piece = list[tuple[tuple[int, int], tuple[int, int]]]
+
     @classmethod
-    def assemble(cls, pieces, width, height):
+    def _sorted_by_border(pieces: list[Piece],
+                          border: Border) -> list[Piece]:
         raise NotImplementedError
+
+    @classmethod
+    def assemble(cls, pieces: list[Piece], width: int,
+                 height: int) -> list[Tuple[int, ...]]:
+        horizontal_attachments = {
+            p1_id: p2_id for p1_id, p2_id in
+            zip(cls._sorted_by_border(pieces, cls.Border.RIGHT)[height:],
+                cls._sorted_by_border(pieces, cls.Border.LEFT)[height:])
+        }
+        vertical_attachments = {
+            p1_id: p2_id for p1_id, p2_id in
+            zip(cls._sorted_by_border(pieces, cls.Border.LOWER)[height:],
+                cls._sorted_by_border(pieces, cls.Border.UPPER)[height:])
+        }
+        left_upper_piece_id = [
+            piece[2] for piece in pieces if piece[0][0] is None and
+            piece[0][1] is None and piece[1][0] is None
+        ][0]
+        top_row_piece_ids = [left_upper_piece_id]
+        for _ in range(width-1):
+            top_row_piece_ids.append(
+                horizontal_attachments[top_row_piece_ids[-1]]
+            )
+        assembled_puzzle_piece_ids = [top_row_piece_ids]
+        for _ in range(height-1):
+            assembled_puzzle_piece_ids.append(
+                [vertical_attachments[p_id] for p_id
+                 in assembled_puzzle_piece_ids[-1]]
+            )
+        return [tuple(row) for row in assembled_puzzle_piece_ids]
 
 
 puzzle_solver = PuzzleAssembler.assemble  # for Codewars
