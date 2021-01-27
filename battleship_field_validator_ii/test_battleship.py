@@ -2,6 +2,52 @@ import pytest
 from battleship import Battleship
 
 
+SHIP_COLLIDES_TEST_CASES = [
+    (
+        Battleship.Ship((0, 0), 3, Battleship.Ship.Orientation.VERTICAL),
+        Battleship.Ship((2, 0), 2, Battleship.Ship.Orientation.VERTICAL),
+        True
+    ),
+    (
+        Battleship.Ship((0, 0), 3, Battleship.Ship.Orientation.VERTICAL),
+        Battleship.Ship((2, 0), 2, Battleship.Ship.Orientation.HORIZONTAL),
+        True
+    ),
+    (
+        Battleship.Ship((0, 0), 3, Battleship.Ship.Orientation.VERTICAL),
+        Battleship.Ship((2, 0), 1),
+        True
+    ),
+    (
+        Battleship.Ship((0, 0), 3, Battleship.Ship.Orientation.HORIZONTAL),
+        Battleship.Ship((0, 2), 1),
+        True
+    ),
+    (
+        Battleship.Ship((0, 0), 2, Battleship.Ship.Orientation.VERTICAL),
+        Battleship.Ship((2, 0), 2, Battleship.Ship.Orientation.VERTICAL),
+        False
+    ),
+    (
+        Battleship.Ship((0, 0), 2, Battleship.Ship.Orientation.VERTICAL),
+        Battleship.Ship((2, 0), 2, Battleship.Ship.Orientation.HORIZONTAL),
+        False
+    ),
+    (Battleship.Ship((2, 3), 1), Battleship.Ship((2, 3), 1), True),
+    (Battleship.Ship((2, 3), 1), Battleship.Ship((3, 5), 1), False)
+]
+
+
+@pytest.mark.timeout(1)
+@pytest.mark.parametrize(
+    'ship1, ship2, expected_return',
+    [pytest.param(s1, s2, expected, id=str(idx))
+     for idx, (s1, s2, expected) in enumerate(SHIP_COLLIDES_TEST_CASES)]
+)
+def test_ship_collides(ship1, ship2, expected_return):
+    assert ship1.collides(ship2) == expected_return
+
+
 @pytest.mark.timeout(1)
 def test__extract_possible_ships():
     field = \

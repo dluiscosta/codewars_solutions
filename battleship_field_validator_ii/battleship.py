@@ -37,8 +37,8 @@ class Battleship(ABC):
 
     class Ship:
         class Orientation(Enum):
-            VERTICAL = auto()
-            HORIZONTAL = auto()
+            VERTICAL = 0
+            HORIZONTAL = 1
 
         ORIENTATION_TRANSPOSE_DICT = {
             'HORIZONTAL': Orientation.VERTICAL,
@@ -59,6 +59,19 @@ class Battleship(ABC):
                 self.orientation = \
                     self.ORIENTATION_TRANSPOSE_DICT[self.orientation.name]
             return self
+
+        def collides(self, other):
+            intersec = [None, None]
+            self.ori_axis, other.ori_axis = \
+                ((1, 0) if self.orientation is not None and
+                 self.orientation.value == 1 else (0, 1))
+            for ship in [self, other]:
+                intersec[1-ship.ori_axis] = ship.starting_pos[1-ship.ori_axis]
+                ship.ori_axis = (self.orientation.value if
+                                 self.orientation is not None else 0)
+            return [ship.starting_pos[ship.ori_axis] <= intersec[ship.ori_axis]
+                    < ship.starting_pos[ship.ori_axis] + ship.length
+                    for ship in [self, other]] == [True, True]
 
         def __repr__(self):
             w = self.orientation.name.lower() if self.orientation else '1-wide'
