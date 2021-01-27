@@ -25,43 +25,50 @@ Description:
           of the piece at its correct position.
 """
 
-from typing import Tuple
-from enum import Enum, auto
-
 
 class PuzzleAssembler:
 
-    class Border(Enum):
-        LEFT = auto()
-        RIGHT = auto()
-        LOWER = auto()
-        UPPER = auto()
-
-    Piece = list[tuple[tuple[int, int], tuple[int, int]]]
+    @classmethod
+    def _get_pieces_border(cls, piece, border_name: str) -> tuple:
+        if border_name == 'upper':
+            return piece[0]
+        elif border_name == 'lower':
+            return piece[1]
+        elif border_name == 'left':
+            return (piece[0][0], piece[1][0])
+        elif border_name == 'right':
+            return (piece[0][1], piece[1][1])
+        else:
+            raise ValueError('Invalid border_name: {}'.format(border_name))
 
     @classmethod
-    def _sorted_by_border(pieces: list[Piece],
-                          border: Border) -> list[Piece]:
-        raise NotImplementedError
+    def _sorted_by_border(cls, pieces: list, border_name: str) -> list:
+        return sorted(
+            pieces,
+            key=lambda p: cls._get_pieces_border(p, border_name).__hash__()
+        )
 
     @classmethod
-    def assemble(cls, pieces: list[Piece], width: int,
-                 height: int) -> list[Tuple[int, ...]]:
+    def _find_left_upper_corner_piece(cls, pieces: list):
+        return [piece for piece in pieces if piece[0][0] is None and
+                piece[0][1] is None and piece[1][0] is None][0]
+
+    @classmethod
+    def assemble(cls, pieces: list, width: int, height: int) -> list:
+        # since pieces borders are unique, compute attachments by finding
+        # matching opposing borders through sorting
         horizontal_attachments = {
-            p1_id: p2_id for p1_id, p2_id in
-            zip(cls._sorted_by_border(pieces, cls.Border.RIGHT)[height:],
-                cls._sorted_by_border(pieces, cls.Border.LEFT)[height:])
-        }
+            p1[2]: p2[2] for p1, p2 in
+            zip(cls._sorted_by_border(pieces, 'right'),
+                cls._sorted_by_border(pieces, 'left'))
+        }  # attachments to the right
         vertical_attachments = {
-            p1_id: p2_id for p1_id, p2_id in
-            zip(cls._sorted_by_border(pieces, cls.Border.LOWER)[height:],
-                cls._sorted_by_border(pieces, cls.Border.UPPER)[height:])
-        }
-        left_upper_piece_id = [
-            piece[2] for piece in pieces if piece[0][0] is None and
-            piece[0][1] is None and piece[1][0] is None
-        ][0]
-        top_row_piece_ids = [left_upper_piece_id]
+            p1[2]: p2[2] for p1, p2 in
+            zip(cls._sorted_by_border(pieces, 'lower'),
+                cls._sorted_by_border(pieces, 'upper'))
+        }  # attachments bellow
+        # build assembled puzzle id matrix by iterating through attachments
+        top_row_piece_ids = [cls._find_left_upper_corner_piece(pieces)[2]]
         for _ in range(width-1):
             top_row_piece_ids.append(
                 horizontal_attachments[top_row_piece_ids[-1]]
