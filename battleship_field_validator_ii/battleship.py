@@ -108,7 +108,7 @@ class Battleship(ABC):
             }
             if ship.orientation:
                 ship.orientation = flip_dict[ship.orientation.name]
-                ship.starting_position = ship.starting_position[::-1]
+                ship.starting_pos = ship.starting_pos[::-1]
             return ship
 
         np_field = np.array(field)
