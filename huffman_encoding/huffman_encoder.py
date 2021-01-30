@@ -14,7 +14,7 @@ class HuffmanEncoder:
     char = NewType('char', str)
 
     @staticmethod
-    # O(len(char_freqs)) time and space
+    # O(nlogn) time and O(n) space, n = len(char_freqs)
     def _build_tree(char_freqs: List[Tuple[char, int]]) -> Node:
         # start with each char as an individual tree and iterativelly
         # put the 2 less frequent trees under a new node
@@ -29,6 +29,7 @@ class HuffmanEncoder:
         return trees[0]
 
     @classmethod
+    # O(nlogn) time and O(n) space, n = len(char_freqs)
     def _compute_encoding_dict(cls, char_freqs: List[Tuple[char, int]]
                                ) -> Tuple[Dict[char, bits], Dict[bits, char]]:
 
@@ -45,6 +46,7 @@ class HuffmanEncoder:
         return encoding_dict
 
     @staticmethod
+    # O(nlogn) time and O(n) space, n = len(str_)
     def extract_char_freqs(str_: str) -> List[Tuple[char, int]]:
         freqs_dict = {}
         for char_ in str_:
@@ -53,6 +55,7 @@ class HuffmanEncoder:
         return freqs_dict.items()
 
     @classmethod
+    # O(nlogn) time and O(n) space, n = len(str_)
     def encode(cls, char_freqs: List[Tuple[char, int]], str_: str) -> bits:
         if len(char_freqs) <= 1:
             return None
@@ -60,6 +63,7 @@ class HuffmanEncoder:
         return ''.join([encoding_dict[char_] for char_ in str_] + [''])
 
     @classmethod
+    # O(nlogn) time and O(n) space, n = len(bits_)
     def decode(cls, char_freqs: List[Tuple[char, int]], bits_: bits) -> str:
         if len(char_freqs) <= 1:
             return None
