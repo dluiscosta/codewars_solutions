@@ -29,22 +29,20 @@ class HuffmanEncoder:
         return trees[0]
 
     @classmethod
-    def _compute_encoding_dict_rec(cls, node: Union[Node, char],
-                                   acc_bits: bits = '') -> None:
-        if acc_bits == '':  # initialization
-            cls.encoding_dict = {}
-        if isinstance(node, str):  # leaf
-            cls.encoding_dict[node] = acc_bits
-        else:  # recursive step
-            cls._compute_encoding_dict_rec(node.left, acc_bits + '0')
-            cls._compute_encoding_dict_rec(node.right, acc_bits + '1')
+    def _compute_encoding_dict(cls, char_freqs: List[Tuple[char, int]]
+                               ) -> Tuple[Dict[char, bits], Dict[bits, char]]:
 
-    @classmethod
-    def _compute_encoding_dict(
-        cls, char_freqs: List[Tuple[char, int]]
-    ) -> Tuple[Dict[char, bits], Dict[bits, char]]:
-        cls._compute_encoding_dict_rec(cls._build_tree(char_freqs))
-        return cls.encoding_dict
+        def _compute_encoding_dict_rec(node: Union['cls.Node', 'cls.char'],
+                                       acc_bits: 'cls.bits' = '') -> None:
+            if isinstance(node, str):  # leaf
+                encoding_dict[node] = acc_bits
+            else:  # recursive step
+                _compute_encoding_dict_rec(node.left, acc_bits + '0')
+                _compute_encoding_dict_rec(node.right, acc_bits + '1')
+
+        encoding_dict = {}
+        _compute_encoding_dict_rec(cls._build_tree(char_freqs))
+        return encoding_dict
 
     @staticmethod
     def extract_char_freqs(str_: str) -> List[Tuple[char, int]]:
