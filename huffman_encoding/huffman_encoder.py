@@ -14,6 +14,7 @@ class HuffmanEncoder:
     char = NewType('char', str)
 
     @staticmethod
+    # O(len(char_freqs)) time and space
     def _build_tree(char_freqs: List[Tuple[char, int]]) -> Node:
         # start with each char as an individual tree and iterativelly
         # put the 2 less frequent trees under a new node
