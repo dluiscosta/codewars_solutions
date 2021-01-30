@@ -1,42 +1,22 @@
 from typing import List, Tuple, Dict, Union, NewType
 from bisect import bisect
 
-bits = NewType('bits', str)
-char = NewType('char', str)
-
 
 class HuffmanEncoder:
 
     class Node:
-        id_counter = 0
-
         def __init__(self, left: Union['HuffmanEncoder.Node', str],
                      right: Union['HuffmanEncoder.Node', str]):
             self.left = left
             self.right = right
-            self.id = HuffmanEncoder.Node.id_counter
-            HuffmanEncoder.Node.id_counter += 1
 
-        def get_recursive_repr(self) -> str:
-            return self.__repr__() + \
-                ('\n' + self.left.get_recursive_repr()
-                 if isinstance(self.left, HuffmanEncoder.Node) else '') + \
-                ('\n' + self.right.get_recursive_repr()
-                 if isinstance(self.right, HuffmanEncoder.Node) else '')
-
-        def __repr__(self) -> str:
-            return '({}) <-- ({}) --> ({})'.format(
-                'Node ' + str(self.left.id) if
-                isinstance(self.left, HuffmanEncoder.Node) else self.left,
-                'Node ' + str(self.id),
-                'Node ' + str(self.right.id) if
-                isinstance(self.right, HuffmanEncoder.Node) else self.right
-            )
+    bits = NewType('bits', str)
+    char = NewType('char', str)
 
     @staticmethod
-    def _build_tree(char_freqs: List[Tuple[char, int]]) -> 'Node':
+    def _build_tree(char_freqs: List[Tuple[char, int]]) -> Node:
         # start with each char as an individual tree and iterativelly
-        # put the 2 more frequent trees under a new node
+        # put the 2 less frequent trees under a new node
         trees, freqs = [list(t) for t in
                         zip(*sorted(char_freqs, key=lambda t: t[1]))]
         while(len(trees) > 1):
@@ -46,15 +26,15 @@ class HuffmanEncoder:
             trees.insert(new_tree_pos, new_tree)
             freqs.insert(new_tree_pos, new_tree_freq)
         return trees[0]
-        
+
     @classmethod
     def _compute_encoding_dict_rec(cls, node: Union[Node, char],
                                    acc_bits: bits = '') -> None:
-        if acc_bits == '':
+        if acc_bits == '':  # initialization
             cls.encoding_dict = {}
         if isinstance(node, str):  # leaf
             cls.encoding_dict[node] = acc_bits
-        else:  # recursive steps
+        else:  # recursive step
             cls._compute_encoding_dict_rec(node.left, acc_bits + '0')
             cls._compute_encoding_dict_rec(node.right, acc_bits + '1')
 
@@ -85,12 +65,13 @@ class HuffmanEncoder:
         if len(char_freqs) <= 1:
             return None
         node = root = cls._build_tree(char_freqs)
+        # travel down the tree following bits_ directions
         decoded_str = ''
         for bit_ in bits_:
             node = node.left if bit_ == '0' else node.right
-            if isinstance(node, str):
-                decoded_str += node
-                node = root
+            if isinstance(node, str):  # reached leaf
+                decoded_str += node  # decoded char
+                node = root  # go back to root
         return decoded_str
 
 
